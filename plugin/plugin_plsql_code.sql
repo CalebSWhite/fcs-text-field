@@ -1,22 +1,21 @@
-procedure render
-  ( p_item   in            apex_plugin.t_item
-  , p_plugin in            apex_plugin.t_plugin
-  , p_param  in            apex_plugin.t_item_render_param
-  , p_result in out nocopy apex_plugin.t_item_render_result
-  )
-as
-    --
-    l_result        apex_plugin.t_page_item_render_result;
-    l_escaped_value varchar2(32767)           := apex_escape.html(p_param.value);
-    l_name          apex_plugin.t_input_name;
-    l_display_value varchar2(32767);
-    --
-    l_enter_submit  boolean                   := (coalesce(p_item.attribute_01, 'N') = 'Y');
-    l_is_disabled   boolean                   := (coalesce(p_item.attribute_02, 'N') = 'Y');
-    l_save_state    boolean                   := (coalesce(p_item.attribute_03, 'N') = 'Y'); -- Send On Page Submit
-    l_text_case     p_item.attribute_06%type  := p_item.attribute_06;
-    l_subtype       p_item.attribute_07%type  := p_item.attribute_07;
-    --
+--
+----------------------------------------------------------------------------------------------------------------------------------
+--
+procedure render (p_item   in            apex_plugin.t_item,
+                  p_plugin in            apex_plugin.t_plugin,
+                  p_param  in            apex_plugin.t_item_render_param,
+                  p_result in out nocopy apex_plugin.t_item_render_result) as
+  --
+  l_escaped_value varchar2(32767)           := apex_escape.html(p_param.value);
+  l_name          apex_plugin.t_input_name;
+  l_display_value varchar2(32767);
+  --
+  l_enter_submit  boolean                   := (coalesce(p_item.attribute_01, 'N') = 'Y');
+  l_is_disabled   boolean                   := (coalesce(p_item.attribute_02, 'N') = 'Y');
+  l_save_state    boolean                   := (coalesce(p_item.attribute_03, 'N') = 'Y'); -- Send On Page Submit
+  l_text_case     p_item.attribute_06%type  := p_item.attribute_06;
+  l_subtype       p_item.attribute_07%type  := p_item.attribute_07;
+  --
 begin
   --
   if p_param.value_set_by_controller and
@@ -64,10 +63,8 @@ begin
                 'maxlength="'||p_item.element_max_length||'" '||
                 case when l_text_case = 'U'
                 then 'data-text-case="UPPER" '
-                -- then 'onkeyup="this.value = this.value.toUpperCase();" '
                 when l_text_case = 'L'
                 then 'data-text-case="LOWER" '
-                -- then 'onkeyup="this.value = this.value.toLowerCase();" '
                 else '' end ||
                 --
                 case when l_enter_submit and not l_is_disabled
@@ -89,11 +86,8 @@ begin
                     'readonly="readonly" tabindex="-1" '
                 end ||
                 ' />');
-
     --
     apex_javascript.add_onload_code(p_code => 'fcsTextField(apex.item(' ||p_item.name || '))');
-    -- l_result.javascript_function := 'fcsTextField(this);';
-    -- l_result.javascript_function := 'function() { return fcsTextField(this); }';
     --
     if p_item.icon_css_classes is not null
     then
@@ -114,19 +108,16 @@ end render;
 --
 ----------------------------------------------------------------------------------------------------------------------------------
 --
-procedure validate
-  ( p_item     in apex_plugin.t_item
-  , p_plugin   in apex_plugin.t_plugin
-  , p_param    in apex_plugin.t_item_validation_param
-  , p_result   in out nocopy apex_plugin.t_item_validation_result
-  )
-is
-    --
-    c_trim_spaces      constant varchar2(100) := nvl(p_item.attribute_05, 'BOTH');
-    c_restricted_chars constant varchar2(4)   := chr(32) || chr(10) || chr(13) || chr(9);
-    --
-    l_value varchar2( 32767 );
-    --
+procedure validate (p_item   in            apex_plugin.t_item,
+                    p_plugin in            apex_plugin.t_plugin,
+                    p_param  in            apex_plugin.t_item_validation_param,
+                    p_result in out nocopy apex_plugin.t_item_validation_result) is
+  --
+  c_trim_spaces      constant varchar2(100) := nvl(p_item.attribute_05, 'BOTH');
+  c_restricted_chars constant varchar2(4)   := chr(32) || chr(10) || chr(13) || chr(9);
+  --
+  l_value varchar2( 32767 );
+  --
 begin
   --
   if c_trim_spaces != 'NONE'
